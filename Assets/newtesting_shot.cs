@@ -29,15 +29,18 @@ public class newtesting_shot: MonoBehaviour
         {
             if(zandan>0)
             {
-                    if(bullet.TryGetComponent<bulletscript>(out var bulletscript_))
+                    if(bullet.TryGetComponent<bulletscript>(out var bulletscript1))
                 {
+                    Debug.Log("Getcomponent");
+                    Debug.Log(bulletscript1.bullet_Damage);
+
                     // StartCoroutine(SR_shot_BulletTest());
                     //Reload_chenber();
                 }
 
-                StartCoroutine(SR_shot_BulletTest());
+                //StartCoroutine(SR_shot_BulletTest());
 
-                //SR_shot_BulletTest();
+                SR_shot_BulletTest(bullet,muzzle);
 
 
             }
@@ -49,11 +52,23 @@ public class newtesting_shot: MonoBehaviour
             }
         }
     }
-    IEnumerator SR_shot_BulletTest()
+    [SerializeField]void SR_shot_BulletTest(GameObject bullet,GameObject muzzle)
     {
+                Debug.Log("s");
                 Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
 
                 bulletscript_.Fire_Bullet(500f);
+
+                        //ここでAnimationさせる
+
+
+
+                        StartCoroutine(SR_shot_BulletTest1());
+
+    }
+    [SerializeField]IEnumerator SR_shot_BulletTest1()
+    {
+                Debug.Log("s1");
 
                         while (Input.GetMouseButtonDown(0))
                         {
