@@ -226,7 +226,8 @@ public  class FireB : MonoBehaviour
 
                         Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
 
-                        bulletscript_.Fire_Bullet(500f);
+                        //bulletscript_.Fire_Bullet(500f);                              ///   テスト　保留中
+                        
 
                         while (mousePu == false)
                         {

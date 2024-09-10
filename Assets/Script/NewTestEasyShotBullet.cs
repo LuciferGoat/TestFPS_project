@@ -211,7 +211,7 @@ public class NewTestEasyShotBullet : MonoBehaviour
 
                         Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
 
-                        bulletscript_.Fire_Bullet(500f);
+                        //bulletscript_.Fire_Bullet(500f);
 
                         while (mousePu == false)
                         {

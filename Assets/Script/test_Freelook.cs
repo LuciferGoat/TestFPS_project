@@ -14,13 +14,14 @@ public class test_Freelook : MonoBehaviour
 
     public GameObject cam;//camera
     public GameObject camF;
+    public GameObject subFcamera;
 
     //public GameObject subcam;
     
     public GameObject gun;
     public GameObject player;
     public GameObject player2;
-    public Quaternion cameraRotX,cameraRotY, characterRot, gunRot,cameraRot2x,cameraRot2y,cameraRot,cameraRotSub;
+    public Quaternion cameraRotX,cameraRotY, characterRot, gunRot,cameraRot2x,cameraRot2y,cameraRot,cameraRotSub,cameraRotSubF;
     float Xsensityvity = 3f, Ysensityvity = 3f;
     
     bool cursorLock = true;
@@ -74,6 +75,7 @@ public class test_Freelook : MonoBehaviour
 
         cameraRot = cam.transform.localRotation;
         cameraRotSub = camF.transform.localRotation;
+        cameraRotSubF = subFcamera.transform.localRotation;
 
         gunRot = gun.transform.localRotation;
         characterRot = transform.rotation;
@@ -116,13 +118,13 @@ public class test_Freelook : MonoBehaviour
             if(Input.GetMouseButton(1))
                 {
                     scope_obj_f.GetComponent<Renderer>().material = AimMaterial;
-                    gun.transform.localPosition = new UnityEngine.Vector3(0.2f,-0.142f,1f);
+                    gun.transform.localPosition = new UnityEngine.Vector3(0f,-0.142f,1.0f);
                     camF.gameObject.transform.localPosition =new UnityEngine.Vector3(0.2f,0.75f,0f);
 
                 }else
                 {
                     scope_obj_f.GetComponent<Renderer>().material = normalscMaterial;
-                    gun.transform.localPosition = new UnityEngine.Vector3(0.41f,-0.15f,1.2f);
+                    gun.transform.localPosition = new UnityEngine.Vector3(0.2f,-0.15f,1.2f);
                     camF.gameObject.transform.localPosition =new UnityEngine.Vector3(0f,0.75f,0f);
                 }
 
@@ -132,12 +134,16 @@ public class test_Freelook : MonoBehaviour
                 x2Rot = Input.GetAxis("Mouse X")* Ysensityvity;
                 y2Rot = Input.GetAxis("Mouse Y") * Xsensityvity;
 
-                cameraRot *= Quaternion.Euler(-y2Rot, x2Rot, 0f);
+                cameraRot *= Quaternion.Euler(-y2Rot, 0f, 0f);
+                cameraRotSubF *= Quaternion.Euler(0f, x2Rot, 0f);
+
                 //cameraRotSub *= Quaternion.Euler(-y2Rot, 0f, 0f);
 
 
                 cameraRot = ClampRotation(cameraRot,1,freeminX,freemaxX);
                 cameraRotSub = ClampRotation(cameraRotSub,0,freeminY,freemaxY);
+                cameraRotSubF = ClampRotation(cameraRotSubF,1,freeminX,freemaxX);
+
 
                 cameraSn = true;
 
@@ -206,6 +212,7 @@ public class test_Freelook : MonoBehaviour
 
                     cameraSn = false;
                     cameraRot = Quaternion.Euler(0f, 0f, 0f);
+                    cameraRotSubF = Quaternion.Euler(0f, 0f, 0f);
                     //cameraRotSub *= Quaternion.Euler(0f, 0f, 0f);
 
                     y2Rot = 0;
@@ -247,6 +254,8 @@ public class test_Freelook : MonoBehaviour
 
                 cam.transform.localRotation = cameraRot;
                 camF.transform.localRotation = cameraRotSub;
+                subFcamera.transform.localRotation = cameraRotSubF;
+                
 
             }
             if(!cameraSn)
@@ -256,6 +265,8 @@ public class test_Freelook : MonoBehaviour
                 camF.transform.localRotation = cameraRotSub;
                 transform.localRotation = characterRot;
                 gun.transform.localRotation = gunRot;
+
+                subFcamera.transform.localEulerAngles = new Vector3(0f,0f,0f);
 
                 //cameraRot2x *= Quaternion.Euler(0f, 0f, 0f);
                 //cameraRot2y *= Quaternion.Euler(0f, 0f, 0f);

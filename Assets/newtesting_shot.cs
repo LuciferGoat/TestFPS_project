@@ -5,8 +5,9 @@ using UnityEngine;
 public class newtesting_shot: MonoBehaviour
 {
     private Rigidbody rb;
+    private Rigidbody rb_bullet;
 
-    public bulletscript bulletscript_;
+    public bulletscript bulletscript_1;
 
     [SerializeField]
     private GameObject muzzle;
@@ -15,21 +16,48 @@ public class newtesting_shot: MonoBehaviour
     [SerializeField]
     private GameObject bullet;
 
+     [SerializeField]
+    private GameObject muzzle2;
+
+    [SerializeField]
+    public float bullet_Velocity; 
+
+
+
     public int zandan;
     // Start is called before the first frame update
+
+    private bool ableshot;
+    private bool reloading;
     void Start()
     {
-        
+        if(bullet_Velocity == 0)
+        {
+            bullet_Velocity = 1;
+        }
+
+        reloading = false;
+        if(bullet.TryGetComponent(out bulletscript bulletscript1))  
+        {
+            bulletscript_1 = bulletscript1;
+        }
+        else
+        {
+            Debug.Log("false bullet");
+        }
+        ableshot = true;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) )
+        if(Input.GetMouseButtonDown(0) && ableshot&& !reloading )
         {
+            ableshot = false;
             if(zandan>0)
             {
-                    if(bullet.TryGetComponent<bulletscript>(out var bulletscript1))
+                    if(bullet.TryGetComponent(out bulletscript bulletscript1))   //bullet.TryGetComponent<bulletscript>(out var bulletscript1)
                 {
                     Debug.Log("Getcomponent");
                     Debug.Log(bulletscript1.bullet_Damage);
@@ -51,13 +79,26 @@ public class newtesting_shot: MonoBehaviour
 
             }
         }
+        if(Input.GetKeyUp(KeyCode.R))
+        {
+            ableshot = false;
+            reloading = true;
+            StartCoroutine(SR_shot_reloadTest());
+            
+        }
+        if(Input.GetKeyUp(KeyCode.Y))
+        {
+           
+        }
     }
-    [SerializeField]void SR_shot_BulletTest(GameObject bullet,GameObject muzzle)
+    [SerializeField]public void SR_shot_BulletTest(GameObject bullet,GameObject muzzle)
     {
                 Debug.Log("s");
-                Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
+                GameObject bullet_clone = Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
+                rb_bullet = bullet_clone.GetComponent<Rigidbody>();
+                rb_bullet.AddForce(muzzle.transform.forward* 50f* bullet_Velocity);
 
-                bulletscript_.Fire_Bullet(500f);
+                //bulletscript_1.Fire_Bullet(500f);
 
                         //ここでAnimationさせる
 
@@ -81,5 +122,16 @@ public class newtesting_shot: MonoBehaviour
                         zandan --;
 
                         //ここでAnimationさせる
+                        ableshot = true;
+                        yield return null;
+    }
+    [SerializeField]IEnumerator SR_shot_reloadTest()
+    {
+        yield return new WaitForSeconds(2);
+        zandan = 7;
+        ableshot = true;
+        reloading = false;
+        yield return null;
+        
     }
 }

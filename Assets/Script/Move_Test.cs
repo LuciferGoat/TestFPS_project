@@ -39,7 +39,8 @@ public int powerUp;
 [Serialize]
 public GameObject playerscript;
 
- 
+ [Serialize]
+ public float move_speed;
 
     Vector3 terePos;
 
@@ -64,6 +65,7 @@ public GameObject playerscript;
     bool mouseP;
 
     bool grounded;
+    bool groundedS;
 
     
 
@@ -96,7 +98,9 @@ public GameObject playerscript;
         playerC.GetComponent<Renderer>().material = normalMaterial;
 
         mouseP = false;
+        
 
+        move_speed = 1f;
 
     }
     
@@ -110,16 +114,20 @@ public GameObject playerscript;
             //transform.Translate(0,0,0.1f,Space.Self);
         }
     }*/
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionStay(Collision collision)
     {
         if(collision.gameObject.tag == "ground")
         {
             grounded = true;
+            groundedS = true;
+        }
+        else
+        {
         }
     }
     void OnCollisionExit(Collision collision)
     {
-        if(collision.gameObject.tag == "ground")
+        if(collision.gameObject.tag == "ground"&& groundedS ==false)
         {
             grounded = false;
         }
@@ -186,7 +194,7 @@ public GameObject playerscript;
         
         if(Input.GetKeyDown(KeyCode.V)&& grounded == true)
         {
-            rb.AddForce(force,ForceMode.Impulse);
+            rb.AddForce(force * jump * move_speed ,ForceMode.Impulse);
 
             //transform.position += speed1 * transform.up * Time.deltaTime;
         }
@@ -196,7 +204,7 @@ public GameObject playerscript;
         if(Input.GetKey(KeyCode.W))
         {
             //position.z += 0.01f;
-            transform.position += Player.transform.TransformDirection(Vector3. forward) * 10f * Time.deltaTime; 
+            transform.position += Player.transform.TransformDirection(Vector3. forward) * 10f * move_speed * Time.deltaTime; 
             //transform.Translate(0.0f,0.0f,0.05f,Space.Self);
             //transform.Translate(forwardVec * Time.deltaTime);
    
@@ -204,7 +212,7 @@ public GameObject playerscript;
         }
         if(Input.GetKey(KeyCode.A))
         {
-            transform.position += mainCameraf.transform.TransformDirection(Vector3. left) * 10f * Time.deltaTime; 
+            transform.position += mainCameraf.transform.TransformDirection(Vector3. left) * 10f * move_speed * Time.deltaTime; 
             //position.x -= 0.01f;
             //transform.Translate(-0.05f,0.0f,0.0f,Space.Self);
 
@@ -212,7 +220,7 @@ public GameObject playerscript;
         }
         if(Input.GetKey(KeyCode.S))
         {
-            transform.position += Player.transform.TransformDirection(Vector3. back) * 10f * Time.deltaTime; 
+            transform.position += Player.transform.TransformDirection(Vector3. back) * 10f * move_speed * Time.deltaTime; 
             //position.z -= 0.01f;
             //transform.Translate(0.0f,0.0f,-0.05f,Space.Self);
 
@@ -220,7 +228,7 @@ public GameObject playerscript;
         }
         if(Input.GetKey(KeyCode.D))
         {
-            transform.position += mainCameraf.transform.TransformDirection(Vector3. right) * 10f * Time.deltaTime; 
+            transform.position += mainCameraf.transform.TransformDirection(Vector3. right) * 10f * move_speed * Time.deltaTime; 
             //position.x += 0.01f;
             //transform.Translate(0.05f,0.0f,0.0f,Space.Self);
 
