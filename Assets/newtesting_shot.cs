@@ -22,6 +22,8 @@ public class newtesting_shot: MonoBehaviour
     [SerializeField]
     public float bullet_Velocity; 
 
+    Vector3 bullet_forward;
+
 
 
     public int zandan;
@@ -96,7 +98,11 @@ public class newtesting_shot: MonoBehaviour
                 Debug.Log("s");
                 GameObject bullet_clone = Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
                 rb_bullet = bullet_clone.GetComponent<Rigidbody>();
-                rb_bullet.AddForce(muzzle.transform.forward* 50f* bullet_Velocity);
+                //rb_bullet.AddForce(muzzle.transform.forward* 50f* bullet_Velocity ,ForceMode.Impulse);
+
+                bullet_forward = muzzle.transform.forward* bullet_Velocity* 0.007f;
+
+                rb_bullet.AddForce(bullet_forward,ForceMode.Impulse);
 
                 //bulletscript_1.Fire_Bullet(500f);
 

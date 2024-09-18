@@ -42,6 +42,9 @@ public GameObject playerscript;
  [Serialize]
  public float move_speed;
 
+ [SerializeField]
+ public int player_attitude;
+
     Vector3 terePos;
 
     Vector3 force;
@@ -55,7 +58,7 @@ public GameObject playerscript;
  
     float normalSpeed = 3f; // 通常時の移動速度
     float sprintSpeed = 5f; // ダッシュ時の移動速度
-    float jump = 8f;        // ジャンプ力
+    float jump = 2f;        // ジャンプ力
     float gravity = 10f;    // 重力の大きさ
  
     Vector3 moveDirection = Vector3.zero;
@@ -67,13 +70,28 @@ public GameObject playerscript;
     bool grounded;
     bool groundedS;
 
-    
+    bool sprint;
+
+    float speed;
+
+    public Vector3 cameraForward;
+
+    // 前後左右の入力（WASDキー）から、移動のためのベクトルを計算
+    // Input.GetAxis("Vertical") は前後（WSキー）の入力値
+    // Input.GetAxis("Horizontal") は左右（ADキー）の入力値
+    Vector3 moveZ;
+    Vector3 moveX;
+
+
+    Vector3 Deceleration;
 
     // Start is called before the first frame update
     void Start()
     {
+        player_attitude = 0;
         rb = GetComponent<Rigidbody>();
         force = new Vector3(0.0f,5.0f,0.0f);
+        sprint = false;
 
         //con = GetComponent&lt;CharacterController&gt;();
         //anim = GetComponent&lt;Animator&gt;();
@@ -102,6 +120,10 @@ public GameObject playerscript;
 
         move_speed = 1f;
 
+        
+
+        
+
     }
     
     /*void Update()
@@ -114,12 +136,18 @@ public GameObject playerscript;
             //transform.Translate(0,0,0.1f,Space.Self);
         }
     }*/
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "ground")
+        {
+            grounded = true;
+        }
+    }
     void OnCollisionStay(Collision collision)
     {
         if(collision.gameObject.tag == "ground")
         {
             grounded = true;
-            groundedS = true;
         }
         else
         {
@@ -127,16 +155,17 @@ public GameObject playerscript;
     }
     void OnCollisionExit(Collision collision)
     {
-        if(collision.gameObject.tag == "ground"&& groundedS ==false)
-        {
             grounded = false;
-        }
     }
     
 
     // Update is called once per frame
     void Update()
     {
+
+        Vector3 position = gameObject.transform.position;
+        cameraForward = Vector3.Scale(mainCamera.transform.forward,new Vector3(1, 0, 1)).normalized;
+        
 
 
         if (mainCamera1 == null)
@@ -190,50 +219,126 @@ public GameObject playerscript;
         }
 
 
+        switch(player_attitude)
+            {
+                case 0:
+                        
+                        if (grounded)
+                        {
+                            speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : normalSpeed;
+                            if(rb.velocity.magnitude < 5)
+                            {
+                                float currentSpeed = speed - rb.velocity.magnitude;
 
+                                moveZ = cameraForward * Input.GetAxis("Vertical") * currentSpeed * 15f;  //　前後（カメラ基準）　 
+                                moveX = mainCamera.transform.right * Input.GetAxis("Horizontal") * currentSpeed * 14f; // 左右（カメラ基準）
+
+                                if(Input.GetAxis("Vertical") == 0)
+                                {
+                                    
+                                }
+                            }
+                            
+                            //if (Input.GetButtonDown("jump"))
+                            if(Input.GetKeyDown(KeyCode.V))
+                            {
+                                //moveDirection.y = jump;
+                                moveDirection.y = 0.5f;
+                            }
+                            
+                            
+                        }
+                        else
+                        {
+                            // 重力を効かせる
+                            moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
+                            moveDirection.y -= gravity * Time.deltaTime;
+                        }
+                        
+                            
+                        moveDirection = moveZ + moveX;
+                
+                        // 移動のアニメーション
+                        //anim.SetFloat("MoveSpeed", (moveZ + moveX).magnitude);
+                
+                        // プレイヤーの向きを入力の向きに変更　
+                        //transform.LookAt(transform.position + moveZ + moveX);
+
+
+
+
+
+                    //    rb.AddForce(moveDirection * Time.deltaTime ,ForceMode.Impulse);
         
-        if(Input.GetKeyDown(KeyCode.V)&& grounded == true)
-        {
-            rb.AddForce(force * jump * move_speed ,ForceMode.Impulse);
-
-            //transform.position += speed1 * transform.up * Time.deltaTime;
-        }
-
-        Vector3 position = gameObject.transform.position;
-
-        if(Input.GetKey(KeyCode.W))
-        {
-            //position.z += 0.01f;
-            transform.position += Player.transform.TransformDirection(Vector3. forward) * 10f * move_speed * Time.deltaTime; 
-            //transform.Translate(0.0f,0.0f,0.05f,Space.Self);
-            //transform.Translate(forwardVec * Time.deltaTime);
-   
-
-        }
-        if(Input.GetKey(KeyCode.A))
-        {
-            transform.position += mainCameraf.transform.TransformDirection(Vector3. left) * 10f * move_speed * Time.deltaTime; 
-            //position.x -= 0.01f;
-            //transform.Translate(-0.05f,0.0f,0.0f,Space.Self);
 
 
-        }
-        if(Input.GetKey(KeyCode.S))
-        {
-            transform.position += Player.transform.TransformDirection(Vector3. back) * 10f * move_speed * Time.deltaTime; 
-            //position.z -= 0.01f;
-            //transform.Translate(0.0f,0.0f,-0.05f,Space.Self);
 
 
-        }
-        if(Input.GetKey(KeyCode.D))
-        {
-            transform.position += mainCameraf.transform.TransformDirection(Vector3. right) * 10f * move_speed * Time.deltaTime; 
-            //position.x += 0.01f;
-            //transform.Translate(0.05f,0.0f,0.0f,Space.Self);
+                        /*
+                        if(Input.GetKeyDown(KeyCode.V)&& grounded == true)
+                        {
+                            rb.AddForce(force * jump * move_speed ,ForceMode.Impulse);
+                        }
 
-        }
-        //gameObject.transform.position = position;
+                        if(Input.GetKey(KeyCode.W)&& grounded == true)
+                        {
+                            if(sprint)
+                            {
+                            move_speed = 1.5f;
+                            }else
+                            {
+                            move_speed = 1.5f;
+                            }
+                            transform.position += Player.transform.TransformDirection(Vector3. forward) * 10f * move_speed * Time.deltaTime; 
+                        }
+                        if(Input.GetKey(KeyCode.A)&& grounded == true)
+                        {
+                            transform.position += mainCameraf.transform.TransformDirection(Vector3. left) * 10f * move_speed * Time.deltaTime; 
+                        }
+                        if(Input.GetKey(KeyCode.S)&& grounded == true)
+                        {
+                            transform.position += Player.transform.TransformDirection(Vector3. back) * 10f * move_speed * Time.deltaTime; 
+                        }
+                        if(Input.GetKey(KeyCode.D)&& grounded == true)
+                        {
+                            transform.position += mainCameraf.transform.TransformDirection(Vector3. right) * 10f * move_speed * Time.deltaTime; 
+                            
+                        }*/
+
+                break;
+                
+                case 1:
+                        speed = 2f;
+                        if (grounded)
+                        {
+                            moveZ = cameraForward * Input.GetAxis("Vertical") * speed;  //　前後（カメラ基準）　 
+                            moveX = Camera.main.transform.right * Input.GetAxis("Horizontal") * speed; // 左右（カメラ基準）
+
+                            moveDirection = moveZ + moveX;
+                            if (Input.GetButtonDown("V"))
+                            {
+                                player_attitude = 0;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // 重力を効かせる
+                            moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
+                            moveDirection.y -= gravity * Time.deltaTime;
+                        }
+
+                        
+                
+                        // 移動のアニメーション
+                        //anim.SetFloat("MoveSpeed", (moveZ + moveX).magnitude);
+                
+                        rb.AddForce(moveDirection * Time.deltaTime);
+                break;
+                
+            }
+        
+        
 
 
         if(Input.GetKey(KeyCode.Alpha0))
@@ -242,26 +347,6 @@ public GameObject playerscript;
             gameObject.transform.position = new Vector3(0f,10f,0f);
 
         }
-
-        // if(Input.GetKey(KeyCode.UpArrow))
-        // {
-        //     transform.Rotate(-0.05f,0.0f,0.0f);
-        // }
-        // if(Input.GetKey(KeyCode.DownArrow))
-        // {
-        //     transform.Rotate(0.05f,0.0f,0.0f);
-        // }
-        // if(Input.GetKey(KeyCode.RightArrow))
-        // {
-        //     transform.Rotate(0.0f,0.05f,0.0f);
-        // }
-        // if(Input.GetKey(KeyCode.LeftArrow))
-        // {
-        //     transform.Rotate(0.0f,-0.05f,0.0f);
-        // }
-
-
-
 
 
         // 移動速度を取得
@@ -306,6 +391,8 @@ public GameObject playerscript;
     }
     void FixedUpdate()
     {
-
+        
+        rb.AddForce(moveDirection * Time.deltaTime ,ForceMode.Impulse);
+        
     }
 }
