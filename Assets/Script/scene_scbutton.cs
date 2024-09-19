@@ -22,6 +22,10 @@ public class scene_scbutton : MonoBehaviour
     {
         //if(){}
     }
+    public void OnClick()
+    {
+        Invoke("ChangeScene", 1.5f);
+    }
     public void OnPressed()
     {
         Invoke("ChangeScene", 1.5f);

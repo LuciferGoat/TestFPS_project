@@ -6,6 +6,10 @@ TagManager:
   tags:
   - ground
   - wall
+  - bullet
+  - test_obj
+  - shot_area
+  - shell
   layers:
   - Default
   - TransparentFX

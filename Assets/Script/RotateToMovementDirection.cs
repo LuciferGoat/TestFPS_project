@@ -30,7 +30,7 @@ public class RotateToMovementDirection : MonoBehaviour
         {
             return;
         }
-        var rotation = UnityEngine.Quaternion.LookRotation(delta, UnityEngine.Vector3.up);
+        var rotation = UnityEngine.Quaternion.LookRotation(delta, UnityEngine.Vector3.forward);
 
         _transform.rotation = rotation;
     }

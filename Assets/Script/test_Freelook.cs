@@ -47,7 +47,7 @@ public class test_Freelook : MonoBehaviour
 
     bool cameraSn = false;
 
-    public Player player_;
+    public Player player_1;
 
     [SerializeField]
     private Material normalscMaterial;
@@ -56,6 +56,9 @@ public class test_Freelook : MonoBehaviour
 
     public GameObject scope_obj_f;
 
+
+    [SerializeField]
+    
 
     // Start is called before the first frame update
     void Start()
