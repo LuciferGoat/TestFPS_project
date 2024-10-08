@@ -22,6 +22,9 @@ public class bulletscript : MonoBehaviour
     public GameObject Emitter_obj;
 
     public LayerMask mask = -1;
+
+    [SerializeField] private ParticleSystem particle_Hibana;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,7 +51,7 @@ public class bulletscript : MonoBehaviour
 
         RaycastHit hit;
 
-        bool isHit = Physics.Raycast(ray, out hit, 100.0f, mask);
+        bool isHit = Physics.Raycast(ray, out hit, 5.0f, mask);
 
         if(isHit)
         {
@@ -57,7 +60,8 @@ public class bulletscript : MonoBehaviour
             if(hitObj.gameObject.tag == "shell")
             {
                 UI_for_Player.Score_clay++;
-                Destroy(hitObj);
+                particle_Hibana.GetComponent<ParticleSystem>().Play();
+                //Destroy(hitObj);
             }
 
             if(hitObj.gameObject.tag == "test_obj")
