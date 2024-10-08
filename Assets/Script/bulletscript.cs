@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class bulletscript : MonoBehaviour
@@ -51,7 +51,7 @@ public class bulletscript : MonoBehaviour
 
         RaycastHit hit;
 
-        bool isHit = Physics.Raycast(ray, out hit, 5.0f, mask);
+        bool isHit = Physics.Raycast(ray, out hit, 7.0f, mask);
 
         if(isHit)
         {
@@ -60,13 +60,17 @@ public class bulletscript : MonoBehaviour
             if(hitObj.gameObject.tag == "shell")
             {
                 UI_for_Player.Score_clay++;
-                particle_Hibana.GetComponent<ParticleSystem>().Play();
+                Instantiate(particle_Hibana,this.transform.position,this.transform.rotation);
+                particle_Hibana.Play();
                 //Destroy(hitObj);
             }
 
             if(hitObj.gameObject.tag == "test_obj")
             {
             //hitObj.GetComponent<Renderer>().material.color = Color.green;
+
+            var hibana_c = Instantiate(particle_Hibana,this.transform.position,this.transform.rotation);
+            hibana_c.Play();
 
             }
 
@@ -103,5 +107,9 @@ public class bulletscript : MonoBehaviour
     public void OnCollisionEnter(Collision other)
     {
         //Destroy(this);
+        //GameObject bullet_clone = Instantiate(bullet,muzzle.transform.position,muzzle.transform.rotation);
+
+        Instantiate(particle_Hibana,this.transform.position,this.transform.rotation);
+        particle_Hibana.GetComponent<ParticleSystem>().Play();
     }
 }

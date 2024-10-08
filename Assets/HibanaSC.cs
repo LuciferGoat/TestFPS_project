@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class HibanaSC : MonoBehaviour
 {
+
+    private ParticleSystem particle_Hibana;
+
     // Start is called before the first frame update
     void Start()
     {

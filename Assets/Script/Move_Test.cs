@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Callbacks;
+//using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,6 +64,8 @@ public static float player_KG;
  
     float normalSpeed = 4f; // 通常時の移動速度
     float sprintSpeed = 7f; // ダッシュ時の移動速度
+    float walkspeed2 = 2;
+    float pronespeed = 0.4f;
     float jump = 2f;        // ジャンプ力
     float gravity = 9.8f;    // 重力の大きさ
  
@@ -241,24 +243,24 @@ public static float player_KG;
 
                                     float currentSpeed = speed - rb.velocity.magnitude;
 
-                                    moveZ = cameraForward * Input.GetAxis("Vertical") * currentSpeed* 1.5f  * 10f;  //　前後（カメラ基準）　 
-                                    moveX = mainCamera.transform.right * Input.GetAxis("Horizontal") * currentSpeed* 1.4f * 10f; // 左右（カメラ基準）
+                                    moveZ = cameraForward * Input.GetAxis("Vertical") * currentSpeed* 50f  * 10f;  //　前後（カメラ基準）　 
+                                    moveX = mainCamera.transform.right * Input.GetAxis("Horizontal") * currentSpeed* 50f * 10f; // 左右（カメラ基準）
 
                                     if(Input.GetKeyUp(KeyCode.W))
                                     {
-                                        rb.AddForce(-cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                        rb.AddForce(-cameraForward * Time.deltaTime * currentSpeed*500f,ForceMode.Impulse);
                                     }
                                     if(Input.GetKeyUp(KeyCode.A))
                                     {
-                                        rb.AddForce(mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                        rb.AddForce(mainCamera.transform.right * Time.deltaTime * currentSpeed* 500f,ForceMode.Impulse);
                                     }
                                     if(Input.GetKeyUp(KeyCode.S))
                                     {
-                                        rb.AddForce(cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                        rb.AddForce(cameraForward * Time.deltaTime * currentSpeed*500f,ForceMode.Impulse);
                                     }
                                     if(Input.GetKeyUp(KeyCode.D))
                                     {
-                                        rb.AddForce(-mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                        rb.AddForce(-mainCamera.transform.right * Time.deltaTime * currentSpeed*500f,ForceMode.Impulse);
                                     }
 
                                     //Debug.Log(Input.GetAxis("Horizontal"));
@@ -276,6 +278,12 @@ public static float player_KG;
                                     //moveDirection.y = jump;
                                     moveDirection.y = 10.0f;
                                 }
+                                if(Input.GetKeyDown(KeyCode.Space))
+                                {
+                                    player_attitude = 1;
+                                    break;
+                                }
+
                                 moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
                                 
                             }
@@ -283,7 +291,7 @@ public static float player_KG;
                             {
                                 // 重力を効かせる
                                 //moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
-                                moveDirection.y -= gravity * Time.deltaTime;
+                                //moveDirection.y -= gravity * Time.deltaTime;
                             }
                             
                                 
@@ -341,32 +349,133 @@ public static float player_KG;
                     break;
                     
                     case 1:
-                            speed = 2f;
-                            if (grounded)
-                            {
-                                moveZ = cameraForward * Input.GetAxis("Vertical") * speed;  //　前後（カメラ基準）　 
-                                moveX = Camera.main.transform.right * Input.GetAxis("Horizontal") * speed; // 左右（カメラ基準）
+                            //walkspeed2
 
-                                moveDirection = moveZ + moveX;
-                                if (Input.GetButtonDown("V"))
-                                {
-                                    player_attitude = 0;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                // 重力を効かせる
-                                moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
-                                moveDirection.y -= gravity * Time.deltaTime;
-                            }
-
-                            
-                    
                             // 移動のアニメーション
                             //anim.SetFloat("MoveSpeed", (moveZ + moveX).magnitude);
                     
                             //rb.AddForce(moveDirection * Time.deltaTime);
+
+                            if (grounded)
+                            {
+                                if(rb.velocity.magnitude < walkspeed2)
+                                {
+
+
+                                    float currentSpeed = walkspeed2 - rb.velocity.magnitude;
+
+                                    moveZ = cameraForward * Input.GetAxis("Vertical") * walkspeed2* 1.5f  * 10f;  //　前後（カメラ基準）　 
+                                    moveX = mainCamera.transform.right * Input.GetAxis("Horizontal") * walkspeed2* 1.4f * 10f; // 左右（カメラ基準）
+
+                                    if(Input.GetKeyUp(KeyCode.W))
+                                    {
+                                        rb.AddForce(-cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.A))
+                                    {
+                                        rb.AddForce(mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.S))
+                                    {
+                                        rb.AddForce(cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.D))
+                                    {
+                                        rb.AddForce(-mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+
+                                    //Debug.Log(Input.GetAxis("Horizontal"));
+                                    //Debug.Log(Input.GetAxis("Vertical"));
+                                    
+                                }
+                                else if(rb.velocity.magnitude > sprintSpeed)
+                                {
+                                    
+                                }
+                                
+                                //if (Input.GetButtonDown("jump"))
+                                if(Input.GetKeyDown(KeyCode.V))
+                                {
+                                    player_attitude = 0;
+                                    break;
+                                }
+                                if(Input.GetKeyDown(KeyCode.Space))
+                                {
+                                    player_attitude = 0;
+                                    break;
+                                }
+                                moveDirection = moveZ + moveX;
+                                
+                            }
+                            else
+                            {
+                                // 重力を効かせる
+                                //moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
+                                //moveDirection.y -= gravity * Time.deltaTime;
+                            }
+
+
+
+                    break;
+
+
+                    case 2:
+
+                    if (grounded)
+                            {
+                                if(rb.velocity.magnitude < pronespeed)
+                                {
+
+
+                                    float currentSpeed = pronespeed - rb.velocity.magnitude;
+
+                                    moveZ = cameraForward * Input.GetAxis("Vertical") * pronespeed* 1.5f  * 10f;  //　前後（カメラ基準）　 
+                                    moveX = mainCamera.transform.right * Input.GetAxis("Horizontal") * pronespeed* 1.4f * 10f; // 左右（カメラ基準）
+
+                                    if(Input.GetKeyUp(KeyCode.W))
+                                    {
+                                        rb.AddForce(-cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.A))
+                                    {
+                                        rb.AddForce(mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.S))
+                                    {
+                                        rb.AddForce(cameraForward * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    if(Input.GetKeyUp(KeyCode.D))
+                                    {
+                                        rb.AddForce(-mainCamera.transform.right * Time.deltaTime * currentSpeed*10f,ForceMode.Impulse);
+                                    }
+                                    
+                                }
+                                else if(rb.velocity.magnitude > pronespeed)
+                                {
+                                    
+                                }
+                                
+                                //if (Input.GetButtonDown("jump"))
+                                if(Input.GetKeyDown(KeyCode.V))
+                                {
+                                    player_attitude = 0;
+                                    break;
+                                }
+                                if(Input.GetKeyDown(KeyCode.Space))
+                                {
+                                    player_attitude = 0;
+                                    break;
+                                }
+                                moveDirection = moveZ + moveX;
+                                
+                            }
+                            else
+                            {
+                                // 重力を効かせる
+                                //moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
+                                //moveDirection.y -= gravity * Time.deltaTime;
+                            }
+
                     break;
                     
                 }

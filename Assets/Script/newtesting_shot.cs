@@ -1,10 +1,14 @@
 using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class newtesting_shot: MonoBehaviour
 {
+    public Player player_;
+
+
     private Rigidbody rb;
     private Rigidbody rb_bullet;
 
@@ -34,6 +38,12 @@ public class newtesting_shot: MonoBehaviour
 
     private int gun_status;
 
+    [SerializeField]
+    private GameObject Gun_self;
+
+    [SerializeField]
+    private GameObject Gun_P;
+
 
 
     public int zandan;
@@ -43,6 +53,8 @@ public class newtesting_shot: MonoBehaviour
     private bool reloading;
     void Start()
     {
+        SetPare();
+
         gun_status = 0;
 
         if(bullet_Velocity == 0)
@@ -54,6 +66,7 @@ public class newtesting_shot: MonoBehaviour
         if(bullet.TryGetComponent(out bulletscript bulletscript1))  
         {
             bulletscript_1 = bulletscript1;
+            ableshot = true;
         }
         else
         {
@@ -67,65 +80,68 @@ public class newtesting_shot: MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(gun_status == 0)
+        if(Player.SN_p == 0)
         {
-            if(Input.GetMouseButtonDown(0) && ableshot&& !reloading )
+            if(gun_status == 0)
             {
-                ableshot = false;
-                if(zandan>0)
+                if(Input.GetMouseButtonDown(0) && ableshot&& !reloading )
                 {
-                        if(bullet.TryGetComponent(out bulletscript bulletscript1))   //bullet.TryGetComponent<bulletscript>(out var bulletscript1)
+                    ableshot = false;
+                    if(zandan>0)
                     {
-                        Debug.Log("Getcomponent");
-                        Debug.Log(bulletscript1.bullet_Damage);
+                            if(bullet.TryGetComponent(out bulletscript bulletscript1))   //bullet.TryGetComponent<bulletscript>(out var bulletscript1)
+                        {
+                            Debug.Log("Getcomponent");
+                            Debug.Log(bulletscript1.bullet_Damage);
 
-                        // StartCoroutine(SR_shot_BulletTest());
-                        //Reload_chenber();
+                            // StartCoroutine(SR_shot_BulletTest());
+                            //Reload_chenber();
+                        }
+
+                        //StartCoroutine(SR_shot_BulletTest());
+
+                        SR_shot_BulletTest(bullet,muzzle);
+
+
                     }
+                    else
+                    {
+                        //弾切れ
+                        Debug.Log("No Ammo");
 
-                    //StartCoroutine(SR_shot_BulletTest());
+                        trigger.GetComponent<null_ammo_sound>().null_ammo_sound_ ();
 
-                    SR_shot_BulletTest(bullet,muzzle);
-
-
+                    }
                 }
-                else
+                if(Input.GetMouseButtonDown(0) &&!reloading )
                 {
-                    //弾切れ
-                    Debug.Log("No Ammo");
-
+                    ableshot = false;
                     trigger.GetComponent<null_ammo_sound>().null_ammo_sound_ ();
+                }
 
+                if(Input.GetKeyUp(KeyCode.R))
+                {
+                    ableshot = false;
+                    reloading = true;
+                    StartCoroutine(SR_shot_reloadTest());
+                    
+                }
+                if(Input.GetKeyUp(KeyCode.Y))
+                {
+                
+                }
+
+                if(Input.GetKey(KeyCode.Alpha2))
+                {
+                    gun_status = 1;
                 }
             }
-            if(Input.GetMouseButtonDown(0) &&!reloading )
+            else 
             {
-                ableshot = true;
-                trigger.GetComponent<null_ammo_sound>().null_ammo_sound_ ();
-            }
-
-            if(Input.GetKeyUp(KeyCode.R))
-            {
-                ableshot = false;
-                reloading = true;
-                StartCoroutine(SR_shot_reloadTest());
-                
-            }
-            if(Input.GetKeyUp(KeyCode.Y))
-            {
-            
-            }
-
-            if(Input.GetKey(KeyCode.Alpha2))
-            {
-                gun_status = 1;
-            }
-        }
-        else 
-        {
-            if(Input.GetKey(KeyCode.Alpha1))
-            {
-                gun_status = 0;
+                if(Input.GetKey(KeyCode.Alpha1))
+                {
+                    gun_status = 0;
+                }
             }
         }
     }
@@ -141,6 +157,9 @@ public class newtesting_shot: MonoBehaviour
                 muzzle.GetComponent<shot_sound>().shot_B_sound ();
                 rb_bullet.AddForce(bullet_forward,ForceMode.Impulse);
 
+                //Gun_self.transform.rotation *= Quaternion.Euler(15f, 0f, 0f);
+                Gun_self.transform.localRotation = Quaternion.Euler(-15f, 0f, 0f);
+
                 zandan --;
 
                 //bulletscript_1.Fire_Bullet(500f);
@@ -151,6 +170,7 @@ public class newtesting_shot: MonoBehaviour
 
                         StartCoroutine(SR_shot_BulletTest1());
 
+
     }
     [SerializeField]IEnumerator SR_shot_BulletTest1()
     {
@@ -160,12 +180,17 @@ public class newtesting_shot: MonoBehaviour
                         {
                             yield return new WaitForEndOfFrame();
                         }
-                        yield return new WaitForSeconds(1.2f);
+                        yield return new WaitForSeconds(0.6f);
                         
                         //Reload_chenber();     
 
                         bolt.GetComponent<bolt_sounds>().bolt_sound_ ();
 
+                        //Gun_self.transform.rotation = Gun_P.transform.forward;
+                        //Gun_self.transform.rotation = UnityEngine.Quaternion.LookRotation(Gun_P.transform.forward, this.transform.forward);
+                        
+                        Gun_self.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                        yield return new WaitForSeconds(0.7f);
                         //ここでAnimationさせる
                         ableshot = true;
                         yield return null;
@@ -174,7 +199,7 @@ public class newtesting_shot: MonoBehaviour
     {
         if(magazine!= null)
         {
-            magazine.GetComponent<magazine_sound>().DropM_sound ();
+            //magazine.GetComponent<magazine_sound>().DropM_sound ();
         }
         
         yield return new WaitForSeconds(2);
@@ -187,7 +212,15 @@ public class newtesting_shot: MonoBehaviour
         zandan = 7;
         ableshot = true;
         reloading = false;
+
+        //Gun_self.transform.rotation = Gun_P.transform.rotation;
+        
+
         yield return null;
         
+    }
+    [SerializeField]public void SetPare()
+    {
+        Gun_P = transform.root.gameObject;
     }
 }
