@@ -8,12 +8,15 @@ public class EndGameUI : MonoBehaviour
 
     bool cursorLockUI;
 
+    int End_UI;
+
 
     // Start is called before the first frame update
     void Start()
     {
         cursorLockUI = false;
         confirmationPanel.enabled = false;
+        End_UI = 0;
     }
 
     // Update is called once per frame
@@ -21,16 +24,39 @@ public class EndGameUI : MonoBehaviour
     {
         //UpdateCursorLockUI();
 
-        if (Input.GetKey(KeyCode.Escape))
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Player.SN_p = 1;
-            confirmation();
+            End_UI ++;
+            End_UI = End_UI % 2;
+           
+            confirmationE();
         }
         
             
     }
+    
+    public void confirmationE()
+    {
+        switch(End_UI)
+        {
+            case 0:
+                 cursorLockUI = false;
+                Player.SN_p = 1;
+                confirmationPanel.enabled = true;
 
-    public void confirmation()
+            break;
+
+            case 1:
+                Player.SN_p = 0;
+                cursorLockUI = true;
+                confirmationPanel.enabled = false;
+            break;
+        }
+        
+    }
+
+    /*public void confirmation()
     {
         Player.SN_p = 1;
         cursorLockUI = false;
@@ -41,7 +67,7 @@ public class EndGameUI : MonoBehaviour
         cursorLockUI = true;
         confirmationPanel.enabled = false;
         Player.SN_p = 0;
-    }
+    }*/
     
 
     //ゲーム終了
